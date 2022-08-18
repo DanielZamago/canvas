@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Canvas
+    </title>
+    <style type="text/css">
+        canvas{
+            background-color: pink;
+        }
+    </style>
+</head>
+<body>
+    
+    <canvas id="mycanvas" width="500" height="500" >
+    </canvas>
+
+    <script type="text/javascript">
+
+        var cv = document.getElementById('mycanvas');
+        var ctx = cv.getContext('2d');
+        var color = randomColor();
+        var fig = 'arc';
+
+        cv.addEventListener('click', function(e){
+
+            ctx.strokeStyle = "black";
+            ctx.fillStyle = color;
+            
+            if(fig=='arc'){
+                ctx.beginPath();
+                ctx.arc(e.offsetX,e.offsetY,50,0, 2*Math.PI);
+                ctx.stroke();
+                ctx.fill();
+            }else{
+                ctx.fillRect(e.offsetX-50,e.offsetY-50,100,100);
+                ctx.strokeRect(e.offsetX-50,e.offsetY-50,100,100);
+            }
+            
+
+        })
+
+        cv.addEventListener('mousemove', function(e){
+            
+            console.log(e);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(e.offsetX-5,e.offsetY-5,10,10);
+
+        })
+
+        cv.addEventListener('mouseout', function(e){
+            
+            color = randomColor();
+            fig = (fig=='arc')?'rec':'arc';
+
+        })
+
+        
+
+        function random(number){
+            return Math.floor(Math.random()*number);
+        }
+        function randomColor(){
+            return 'rgba('+random(255)+','+random(255)+','+random(255)+',0.3)';    
+        }
+
+    </script>
+
+</body>
+</html>
