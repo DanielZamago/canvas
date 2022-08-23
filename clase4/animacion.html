@@ -1,91 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Canvas</title>
-    <style type="text/css">
-      canvas {
-        background-color: pink;
-      }
-    </style>
-  </head>
-  <body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Canvas</title>
+        <style type="text/css">
+        canvas {
+            background-color: pink;
+        }
+        </style>
+    </head>
+    <body>
     <canvas id="mycanvas" width="500" height="500"> </canvas>
 
-    <script type="text/javascript">
-      var cv = null;
-      var ctx = null;
-      var press = false;
-      var super_x = 225, super_y = 225;
+        <script type="text/javascript">
+        var cv = null;
+        var ctx = null;
+        var press = false;
+        var player1 = null;
+        var player2 = null;
+        var direccion = 'derecha';
+        var score = 0;
+        var velocidad = 5;
 
-      function run(){
-        cv = document.getElementById("mycanvas");
-        ctx = cv.getContext("2d");
-        paint();
-      }
-
-      function paint() {
-
-        window.requestAnimationFrame(paint);
-
-        ctx.fillStyle = randomColor();
-        ctx.fillRect(0, 0, 500, 500);
-        ctx.fillStyle = randomColor();
-        ctx.fillRect(super_x, super_y, 50, 50);
-        ctx.strokeRect(super_x, super_y, 50, 50);
-
-        super_x+=10;
-        if(super_x>=500){
-            super_x=0;
-        }
-      }
-
-      document.addEventListener("keydown", function (e) {
-        console.log(e);
-
-        //arriba
-        if (e.keyCode == 87 || e.keyCode == 38) {
-          super_y -= 5;
+        function run(){
+            cv = document.getElementById("mycanvas");
+            ctx = cv.getContext("2d");
+            player1 = new Cuadro(225,225,40,40,"red");
+            player2 = new Cuadro(getRandomInt(400),getRandomInt(400),40,40,"red");
+            paint();
         }
 
-        //abajo
-        if (e.keyCode == 83 || e.keyCode == 40) {
-          super_y += 5;
+        function paint() {
+
+            window.requestAnimationFrame(paint);
+
+            ctx.fillStyle = randomColor();
+            ctx.fillRect(0, 0, 500, 500);
+            
+            ctx.fillStyle="black";
+            ctx.fillText("Score:"+score,10,20);
+
+            player1.pintar(ctx);
+            player2.pintar(ctx);
+
+            update();
         }
 
-        //derecha
-        if (e.keyCode == 68 || e.keyCode == 39) {
-          super_x += 5;
+        function update(){
+            if (direccion == 'arriba') {
+                player1.y-=velocidad;
+                if(player1.y<0){
+                    player1.y=500;
+                }
+            }
+
+            //abajo
+            if (direccion == 'abajo') {
+                player1.y+=velocidad;
+                if(player1.y>500){
+                    player1.y=0;
+                }
+            }
+
+            //derecha
+            if (direccion == 'derecha') {
+                player1.x+=velocidad;
+                if(player1.x>500){
+                    player1.x=0;
+                }
+            }
+
+            //izquierda
+            if (direccion == 'izquierda') {
+                player1.x-=velocidad;
+                if(player1.x<0){
+                    player1.x=500;
+                }
+            }
+            
+
+            if (player1.intersects(player2)){
+                player2.x = getRandomInt(500);
+                player2.y = getRandomInt(500);
+                score+=1;
+                velocidad+=10;
+            }
         }
 
-        //izquierda
-        if (e.keyCode == 65 || e.keyCode == 37) {
-          super_x -= 5;
+        document.addEventListener("keydown", function (e) {
+            console.log(e);
+
+            //arriba
+            if (e.keyCode == 87 || e.keyCode == 38) {
+                direccion = 'arriba';
+            }
+
+            //abajo
+            if (e.keyCode == 83 || e.keyCode == 40) {
+                direccion = 'abajo';
+            }
+
+            //derecha
+            if (e.keyCode == 68 || e.keyCode == 39) {
+                direccion = 'derecha';
+            }
+
+            //izquierda
+            if (e.keyCode == 65 || e.keyCode == 37) {
+                direccion = 'izquierda';
+            }
+
+            
+        });
+
+        function Cuadro(x,y,w,h,c){
+            this.x = x;
+            this.y= y;
+            this.w= w;
+            this.h= h;
+            this.c= c;
+
+            this.intersects = function (target) { 
+
+                if(this.x < target.x + target.w &&
+
+                    this.x + this.w > target.x && 
+
+                    this.y < target.y + target.h && 
+
+                    this.y + this.h > target.y){
+
+                        return true;
+                        console.log("hola");
+
+                    }
+
+            };
+
+            this.pintar = function(ctx){
+
+                ctx.fillStyle = this.c;
+                ctx.fillRect(this.x, this.y, this.w, this.h);
+                ctx.strokeRect(this.x, this.y, this.w, this.h);
+
+            }
         }
 
-        paint();
-      });
+        window.requestAnimationFrame = (function () {
+            return (
+            window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            function (callback) {
+                window.setTimeout(callback, 17);
+            }
+            );
+        })();
 
-      window.requestAnimationFrame = (function () {
-        return (
-          window.requestAnimationFrame ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame ||
-          function (callback) {
-            window.setTimeout(callback, 17);
-          }
-        );
-      })();
-
-      window.addEventListener('load',run ,false);
+        window.addEventListener('load',run ,false);
 
         function random(number){
             return Math.floor(Math.random()*number);
         }
         function randomColor(){
             return 'rgba('+random(255)+','+random(255)+','+random(255)+',0.3)';    
+        }
+
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max);
         }
     </script>
   </body>
