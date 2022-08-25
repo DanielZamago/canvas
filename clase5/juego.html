@@ -25,6 +25,9 @@
         var velocidad = 5;
         var pausa = false;
         var paredes = [4];
+        var soldado = new Image();
+        var municion = new Image();
+        var sonido = new Audio();
 
         function run(){
             cv = document.getElementById("mycanvas");
@@ -36,6 +39,11 @@
             paredes[1] = new Cuadro(400,100,30,300,"gray");
             paredes[2] = new Cuadro(190,100,100,30,"gray");
             paredes[3] = new Cuadro(190,370,100,30,"gray"); 
+
+            soldado.src = 'soldado.png';
+            municion.src= 'municion.png';
+            sonido.src = 'recargar.mp3';
+
             paint();
         }
 
@@ -49,8 +57,10 @@
             ctx.fillStyle="black";
             ctx.fillText("Score:"+score,10,20);
 
-            player1.pintar(ctx);
-            player2.pintar(ctx);
+            //player1.pintar(ctx);
+            ctx.drawImage(soldado, player1.x, player1.y);
+            ctx.drawImage(municion, player2.x, player2.y);
+            //player2.pintar(ctx);
             for (var x = 0; x < paredes.length; x++) {
                 paredes[x].pintar(ctx);
                 
@@ -105,6 +115,7 @@
                 player2.y = random(500);
                 score+=1;
                 velocidad+=2;
+                sonido.play();
             }
 
             for (var x = 0; x < paredes.length; x++) {
