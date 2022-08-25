@@ -23,12 +23,19 @@
         var direccion = 'derecha';
         var score = 0;
         var velocidad = 5;
+        var pausa = false;
+        var paredes = [4];
 
         function run(){
             cv = document.getElementById("mycanvas");
             ctx = cv.getContext("2d");
             player1 = new Cuadro(225,225,40,40,"red");
-            player2 = new Cuadro(getRandomInt(400),getRandomInt(400),40,40,"red");
+            player2 = new Cuadro(random(400),random(400),40,40,"red");
+
+            paredes[0] = new Cuadro(50,100,30,300,"gray");
+            paredes[1] = new Cuadro(400,100,30,300,"gray");
+            paredes[2] = new Cuadro(190,100,100,30,"gray");
+            paredes[3] = new Cuadro(190,370,100,30,"gray"); 
             paint();
         }
 
@@ -44,8 +51,20 @@
 
             player1.pintar(ctx);
             player2.pintar(ctx);
+            for (var x = 0; x < paredes.length; x++) {
+                paredes[x].pintar(ctx);
+                
+            }
 
-            update();
+            if(pausa){
+                ctx.fillStyle="rgba(0,0,0,0.5)";
+                ctx.fillRect(0,0,500,500);
+                
+                ctx.fillStyle="white";
+                ctx.fillText('P A U S A', 225,225);
+            }else{
+                update();
+            }
         }
 
         function update(){
@@ -82,10 +101,34 @@
             
 
             if (player1.intersects(player2)){
-                player2.x = getRandomInt(500);
-                player2.y = getRandomInt(500);
+                player2.x = random(500);
+                player2.y = random(500);
                 score+=1;
                 velocidad+=2;
+            }
+
+            for (var x = 0; x < paredes.length; x++) {
+                if(player1.intersects(paredes[x])){
+                    if (direccion == 'arriba') {
+                        player1.y+=velocidad;
+                    }
+
+                    //abajo
+                    if (direccion == 'abajo') {
+                        player1.y-=velocidad;
+                    }
+
+                    //derecha
+                    if (direccion == 'derecha') {
+                        player1.x-=velocidad;
+                    }
+
+                    //izquierda
+                    if (direccion == 'izquierda') {
+                        player1.x+=velocidad;
+                    }
+                }
+                
             }
         }
 
@@ -112,6 +155,9 @@
                 direccion = 'izquierda';
             }
 
+            if(e.keyCode == 32){
+                pausa=(pausa)?false:true;
+            }
             
         });
 
@@ -166,10 +212,6 @@
         }
         function randomColor(){
             return 'rgba('+random(255)+','+random(255)+','+random(255)+',0.3)';    
-        }
-
-        function getRandomInt(max) {
-            return Math.floor(Math.random() * max);
         }
     </script>
   </body>
